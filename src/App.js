@@ -6,7 +6,7 @@ const lessThanValue = value => fieldValue =>
   fieldValue < value ? undefined : `Value must be less than ${value}`;
 
 const greaterThanField = (fieldName) => (fieldValue,state) =>
-  fieldValue > state[fieldName] ? undefined : `Value must be less that ${fieldName}`;
+  fieldValue > state[fieldName] ? undefined : `Value must be greater that ${fieldName}`;
 
 
 class App extends Component {
@@ -19,6 +19,7 @@ class App extends Component {
         totalPrice:200
       },
       validations:{
+        price:["totalPrice"],
         quantity: [required,lessThanValue(100)],
         totalPrice:[greaterThanField("price")]
       },
@@ -26,31 +27,36 @@ class App extends Component {
     }
   }
 
-  validateField = (fieldValue, fieldName) =>{
+  validateField = (fieldName,fieldValue) =>{
     let errorMessage;
     this.state.validations[fieldName].forEach( (validation)=>{
-      errorMessage = validation(fieldValue,this.state);
-      if(errorMessage)return;
-    });
-    this.setState({
-      error:{
-        ...this.state.error,
-        [fieldName]:errorMessage
+      if(typeof validation==="function"){
+        errorMessage = validation(fieldValue,this.state.form);
+          this.setState({
+            error:{
+              ...this.state.error,
+              [fieldName]:errorMessage
+            }
+          })
+          if(errorMessage){return}
+      }else{
+        this.validateField(validation,this.state.form[validation]);
       }
-    })
+    });
   }
 
   handleChange(e, fieldName){
     let fieldValue = Number(e.target.value);
-    if(this.state.validations[fieldName]){
-      this.validateField(fieldValue, fieldName);
-    }
     this.setState({
       form: {
         ...this.state.form,
         [fieldName]: fieldValue
       }
-    })
+    },function(){
+      if(this.state.validations[fieldName]){
+        this.validateField(fieldName)(fieldValue);
+      }
+    });
   }
   render() {
     return (
