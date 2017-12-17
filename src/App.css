@@ -1,0 +1,22 @@
+.App .input-field{
+  height: 50px;
+  width: 200px;
+  margin: 5px;
+  padding: 5px;
+}
+
+.input-field label{
+  display: block;
+  /* padding: 5px; */
+}
+
+.input-field input{
+  display: block;
+  padding: 3px;
+  margin-bottom: 5px;
+}
+
+.error-message{
+  color:red;
+  font-size: 12px;
+}
